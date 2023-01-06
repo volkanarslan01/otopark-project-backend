@@ -42,17 +42,6 @@ app.use(
   })
 );
 
-// ? otopark get
-app.get("/otopark", (req, res) => {
-  let sql = "Select * from otopark ";
-  db2.query(sql, (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.send(rows);
-  });
-});
-
 // ! lastReservation Process
 app.post("/lastReservations", (req, res) => {
   const time_1 = req.body.time_1;
@@ -86,13 +75,14 @@ app.post("/lastReservations", (req, res) => {
       if (err) {
         throw err;
       } else {
+        res.send(rows);
         console.log(rows);
       }
     }
   );
 });
 
-// ! register portion
+// ! register
 app.post("/register", (req, res) => {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
@@ -118,35 +108,7 @@ app.post("/register", (req, res) => {
   });
 });
 
-// ! token portion
-// const verifyJWT = (req, res, next) => {
-//   const token = req.headers["x-access-token"];
-//   if (!token) {
-//     res.send("You , we need to token");
-//   } else {
-//     jwt.verify(token, "jwtSecret", (err, decoded) => {
-//       if (err) {
-//         res.json({ auth: false, message: "U failed to authorized" });
-//       } else {
-//         req.userId = decoded.id;
-//         next();
-//       }
-//     });
-//   }
-// };
-
-// app.get("/isUserAuth", verifyJWT, (req, res) => {
-//   res.send("You are authorized Congrats!");
-// });
-
-// ! login process
-// app.get("/login", (req, res) => {
-//   if (req.session.user) {
-//     res.send({ loggedIn: true, user: req.session.user });
-//   } else {
-//     res.send({ loggedIn: false });
-//   }
-// });
+// ? login
 let email = "";
 app.post("/login", (req, res) => {
   email += req.body.email;
@@ -171,23 +133,20 @@ app.post("/login", (req, res) => {
 });
 
 // ? last get
-
 app.get("/last", (req, res) => {
   let sql = "SELECT * FROM last_reservation where email = ?";
   db.query(sql, [email], (err, rows) => {
     res.send(rows);
   });
 });
-
-app.put("/dateUpdate", (req, res) => {
-  const date = req.body.date;
-  console.log(date);
-  let sql = "UPDATE last_reservation SET nowDatetime = ? where email = ? ";
-  db.query(sql, [date, email], (err, result) => {
+// ? otopark get
+app.get("/otopark", (req, res) => {
+  let sql = "Select * from otopark ";
+  db2.query(sql, (err, rows) => {
     if (err) {
-      console.log(err);
+      throw err;
     }
-    console.log(result);
+    res.send(rows);
   });
 });
 
@@ -199,31 +158,6 @@ app.get("/users", (req, res) => {
       throw err;
     }
     res.send(rows);
-  });
-});
-app.get("/header", (req, res) => {
-  let sql = "Select * from user where email = ? ";
-  db.query(sql, [email], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.send(rows);
-  });
-});
-
-// ! update process
-
-app.put("/update", (req, res) => {
-  const kat = req.body.kat_state;
-  const parkName = req.body.park_name;
-  let sql = "UPDATE otopark SET kat_state = ?  WHERE parkName = ? ";
-  console.log(kat, parkName);
-  db2.query(sql, [kat, parkName], (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      res.send(rows);
-    }
   });
 });
 
@@ -238,8 +172,22 @@ app.get("/lastPark", (req, res) => {
   });
 });
 
-// ? date later update
+// ! update process
+app.put("/update", (req, res) => {
+  const kat = req.body.kat_state;
+  const parkName = req.body.park_name;
+  let sql = "UPDATE otopark SET kat_state = ?  WHERE parkName = ? ";
+  console.log(kat, parkName);
+  db2.query(sql, [kat, parkName], (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      res.send(rows);
+    }
+  });
+});
 
+// ? date later update
 app.put("/update_state", (req, res) => {
   const parkName = req.body.parkName;
   const state = req.body.state;
@@ -250,11 +198,24 @@ app.put("/update_state", (req, res) => {
     if (err) {
       res.send(err);
     }
-    db2.query(sql_2, (err, result) => {
+    db2.query(sql_2, [kat_state, parkName], (err, result) => {
       if (err) {
         res.send(err);
       }
     });
+  });
+});
+
+//  ! update date
+app.put("/dateUpdate", (req, res) => {
+  const date = req.body.date;
+  console.log(date);
+  let sql = "UPDATE last_reservation SET nowDatetime = ? where email = ? ";
+  db.query(sql, [date, email], (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log(result);
   });
 });
 
