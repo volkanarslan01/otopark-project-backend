@@ -195,6 +195,7 @@ app.put("/update_state", (req, res) => {
   });
 });
 
+// ! booking cancellation
 app.delete("/cancel", (req, res) => {
   const id = req.body.id;
   const parkName = req.body.parkName;
@@ -213,6 +214,22 @@ app.delete("/cancel", (req, res) => {
         res.send(result);
       }
     });
+  });
+});
+
+// ? feedback
+
+app.post("/feedback", (req, res) => {
+  const name = req.body.name;
+  const surname = req.body.surname;
+  const email = req.body.email;
+  const feedback = req.body.feedback;
+  let sql = `INSERT INTO feedback (name,surname,email,content) VALUES (?,?,?,?)`;
+  db.query(sql, [name, surname, email, feedback], (err, result) => {
+    if (err) {
+      res.send(err);
+    }
+    res.send(result);
   });
 });
 
