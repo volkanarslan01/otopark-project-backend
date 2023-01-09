@@ -55,22 +55,11 @@ app.post("/lastReservations", (req, res) => {
   const email = req.body.email;
   const now = req.body.date;
   let sql =
-    "INSERT INTO last_reservation (parkName,place,time_1,firstName,lastName,pay,state,email,time_2,nowDatetime) Values (?,?,?,?,?,?,?,?,?,?)";
+    "INSERT INTO last_reservation (parkName,place,time_1,firstName,lastName,pay,state,email,time_2) Values (?,?,?,?,?,?,?,?,?)";
 
   db.query(
     sql,
-    [
-      parkName,
-      place,
-      time_1,
-      firstName,
-      lastName,
-      pay,
-      state,
-      email,
-      time_2,
-      now,
-    ],
+    [parkName, place, time_1, firstName, lastName, pay, state, email, time_2],
     (err, rows) => {
       if (err) {
         throw err;
@@ -206,16 +195,24 @@ app.put("/update_state", (req, res) => {
   });
 });
 
-//  ! update date
-app.put("/dateUpdate", (req, res) => {
-  const date = req.body.date;
-  console.log(date);
-  let sql = "UPDATE last_reservation SET nowDatetime = ? where email = ? ";
-  db.query(sql, [date, email], (err, result) => {
+app.delete("/cancel", (req, res) => {
+  const id = req.body.id;
+  const parkName = req.body.parkName;
+  const kat_state = req.body.kat_state;
+  console.log(id, parkName, kat_state);
+  const sql = `DELETE FROM last_reservation WHERE id = ?`;
+  const sql_2 = `UPDATE otopark SET kat_state = ? WHERE parkName = ?`;
+  db.query(sql, [id], (err, result) => {
     if (err) {
-      console.log(err);
+      return res.send(err);
     }
-    console.log(result);
+    db2.query(sql_2, [kat_state, parkName], (err, result) => {
+      if (err) {
+        return res.send(err);
+      } else {
+        res.send(result);
+      }
+    });
   });
 });
 
