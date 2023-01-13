@@ -6,7 +6,6 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 //! import hash
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 
 //? jsonwebtoken
 
@@ -31,16 +30,6 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true })); // ??
-
-app.use(
-  session({
-    key: "userId ",
-    secret: "subscribe",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { expires: 60 * 60 * 24 },
-  })
-);
 
 // ! lastReservation Process
 app.post("/lastReservations", (req, res) => {
@@ -98,27 +87,33 @@ app.post("/register", (req, res) => {
 });
 
 // ? login
+
 let email = "";
 app.post("/login", (req, res) => {
   email += req.body.email;
   const password = req.body.password;
-  db.query("SELECT * FROM user WHERE email = ?", email, (err, result) => {
-    if (err) {
-      res.send({ err: err });
+  db.query(
+    "SELECT * FROM user WHERE email = ? AND password = ?",
+    email,
+    (err, result) => {
+      if (err) {
+        res.send({ err: err });
+      }
+      if (result.length > 0) {
+        //? hash parse
+        console.log(result);
+        bcrypt.compare(password, result[0].password, (err, response) => {
+          if (err) {
+            console.log(err);
+          } else {
+            res.send({ message: "Wrong username/password combination" });
+          }
+        });
+      } else {
+        res.send({ message: "User doesn t exits" });
+      }
     }
-    if (result.length > 0) {
-      //? hash parse
-      console.log(result);
-      bcrypt.compare(password, result[0].password, (err, response) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Succesful");
-          res.send(response);
-        }
-      });
-    }
-  });
+  );
 });
 
 // ? last get
@@ -232,6 +227,8 @@ app.post("/feedback", (req, res) => {
     res.send(result);
   });
 });
+
+// ! Admin Process
 
 // ?  port listen listen all finally
 app.listen(3004, () => {
