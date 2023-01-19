@@ -86,43 +86,55 @@ app.post("/register", (req, res) => {
   });
 });
 
+let _email;
 // ? login
-
-let email = "";
 app.post("/login", (req, res) => {
-  email += req.body.email;
+  const email = req.body.email;
   const password = req.body.password;
-  db.query(
-    "SELECT * FROM user WHERE email = ? AND password = ?",
-    email,
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      }
-      if (result.length > 0) {
-        //? hash parse
-        console.log(result);
-        bcrypt.compare(password, result[0].password, (err, response) => {
-          if (err) {
-            console.log(err);
-          } else {
-            res.send({ message: "Wrong username/password combination" });
-          }
-        });
-      } else {
-        res.send({ message: "User doesn t exits" });
-      }
+  db.query("SELECT * FROM user WHERE email = ?", [email], (err, result) => {
+    if (err) {
+      res.send({ err: err });
     }
-  );
+    if (result.length > 0) {
+      //? hash parse
+      bcrypt.compare(password, result[0].password, (err, response) => {
+        if (err) {
+          console.log(err);
+        } else if (response === false) {
+          res.send({ message: "email and password combination does not" });
+        } else if (response === true) {
+          res.send({ message: "Succesful" });
+          _email = req.body.email;
+          // ? users get
+        }
+      });
+    } else {
+      res.send({ message: "User doesnt exits" });
+    }
+  });
 });
 
-// ? last get
+app.get("/users", (req, result) => {
+  let sql = "Select * from user where email = ? ";
+  db.query(sql, [_email], (err, rows) => {
+    if (err) {
+      result.send(err);
+    }
+    result.send(rows);
+    // ? last get
+  });
+});
+
 app.get("/last", (req, res) => {
   let sql = "SELECT * FROM last_reservation where email = ?";
-  db.query(sql, [email], (err, rows) => {
+  db.query(sql, [_email], (err, rows) => {
+    if (err) {
+      res.send(err);
+    }
     res.send(rows);
   });
 });
+
 // ? otopark get
 app.get("/otopark", (req, res) => {
   let sql = "Select * from otopark ";
@@ -131,28 +143,6 @@ app.get("/otopark", (req, res) => {
       throw err;
     }
     res.send(rows);
-  });
-});
-
-// ? users get
-app.get("/users", (req, res) => {
-  let sql = "Select * from user where email = ? ";
-  db.query(sql, [email], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    res.send(rows);
-  });
-});
-
-// * park controller
-app.get("/lastPark", (req, res) => {
-  let sql = "SELECT * FROM otopark";
-  db2.query(sql, (err, result) => {
-    if (err) {
-      res.send(err);
-    }
-    res.send(result);
   });
 });
 
