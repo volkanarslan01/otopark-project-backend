@@ -1,34 +1,22 @@
 const express = require("express");
-const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-//! import hash
 const bcrypt = require("bcrypt");
-
-//? jsonwebtoken
-
 const jwt = require("jsonwebtoken");
-
-// ! Modules
-
 // ? use express
 const app = express();
 
 // ? mysql page connect
-const db = require("./Middleware/mysqlHandler.js");
-const db2 = require("./Middleware/mysql2Handler.js");
+const db = require("./model/mysqlHandler.js");
+const db2 = require("./model/mysql2Handler.js");
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    method: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+// ? cors page content
+
+const cors = require("./config/corsOptions");
+
+// ! middleware
+app.use(cors);
 app.use(express.json());
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true })); // ??
 
 // ! lastReservation Process
@@ -88,9 +76,11 @@ app.post("/register", (req, res) => {
 
 let _email;
 // ? login
-app.post("/login", (req, res) => {
+app.post("/login", authenticateToken, (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const user = { email: email };
+  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
   db.query("SELECT * FROM user WHERE email = ?", [email], (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -104,8 +94,8 @@ app.post("/login", (req, res) => {
           res.send({ message: "email and password combination does not" });
         } else if (response === true) {
           res.send({ message: "Succesful" });
+          res.json({ accessToken: accessToken });
           _email = req.body.email;
-          // ? users get
         }
       });
     } else {
@@ -113,6 +103,12 @@ app.post("/login", (req, res) => {
     }
   });
 });
+
+const authenticateToken = (req, res, next) => {};
+const authHeader = req.headers["authorization"];
+const token = authHeader && authHeader.split(" ")[1];
+if (token == null) return res.sendStatus(401);
+jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
 app.get("/users", (req, result) => {
   let sql = "Select * from user where email = ? ";
@@ -218,7 +214,17 @@ app.post("/feedback", (req, res) => {
   });
 });
 
-// ! Admin Process
+// * all process
+app.all("*", (req, res) => {
+  res.status(404);
+  if (req.accepts("html")) {
+    res.send("404");
+  } else if (req.accepts("json")) {
+    res.json({ error: "404 Not Found" });
+  } else {
+    res.type("txt").send("404 Not Found");
+  }
+});
 
 // ?  port listen listen all finally
 app.listen(3004, () => {
