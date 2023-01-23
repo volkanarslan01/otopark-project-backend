@@ -74,9 +74,14 @@ app.post("/register", (req, res) => {
   });
 });
 
+// app.get("/posts", (req, res) => {
+//   // authenticateToken;
+//   res.json(posts.filter((post) => post.username === req.user.name));
+// });
+
 let _email;
 // ? login
-app.post("/login", authenticateToken, (req, res) => {
+app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = { email: email };
@@ -94,7 +99,7 @@ app.post("/login", authenticateToken, (req, res) => {
           res.send({ message: "email and password combination does not" });
         } else if (response === true) {
           res.send({ message: "Succesful" });
-          res.json({ accessToken: accessToken });
+          // res.json({ accessToken: accessToken });
           _email = req.body.email;
         }
       });
@@ -104,11 +109,16 @@ app.post("/login", authenticateToken, (req, res) => {
   });
 });
 
-const authenticateToken = (req, res, next) => {};
-const authHeader = req.headers["authorization"];
-const token = authHeader && authHeader.split(" ")[1];
-if (token == null) return res.sendStatus(401);
-jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+// const authenticateToken = (req, res, next) => {
+//   const authHeader = req.headers["authorization"];
+//   const token = authHeader && authHeader.split(" ")[1];
+//   if (token == null) return res.sendStatus(401);
+//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+//     if (err) return res.sendStatus(403);
+//     req.user = user;
+//     next();
+//   });
+// };
 
 app.get("/users", (req, result) => {
   let sql = "Select * from user where email = ? ";
