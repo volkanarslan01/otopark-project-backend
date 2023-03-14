@@ -99,7 +99,6 @@ app.post("/login", (req, res) => {
           res.send({ message: "email and password combination does not" });
         } else if (response === true) {
           res.send({ message: "Succesful" });
-          // res.json({ accessToken: accessToken });
           _email = req.body.email;
         }
       });
@@ -108,17 +107,6 @@ app.post("/login", (req, res) => {
     }
   });
 });
-
-// const authenticateToken = (req, res, next) => {
-//   const authHeader = req.headers["authorization"];
-//   const token = authHeader && authHeader.split(" ")[1];
-//   if (token == null) return res.sendStatus(401);
-//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-//     if (err) return res.sendStatus(403);
-//     req.user = user;
-//     next();
-//   });
-// };
 
 app.get("/users", (req, result) => {
   let sql = "Select * from user where email = ? ";
