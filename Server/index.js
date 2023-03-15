@@ -3,10 +3,15 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const userRoutes = require("./Routes/userRoutes");
 // ? use express
 const app = express();
 
 // ? mysql page connect
+
+mongoose.connect(process.env.MONGO_DB).then(() => {});
+
 const db = require("./model/mysqlHandler.js");
 const db2 = require("./model/mysql2Handler.js");
 
@@ -15,9 +20,11 @@ const db2 = require("./model/mysql2Handler.js");
 const cors = require("./config/corsOptions");
 
 // ! middleware
+
 app.use(cors);
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true })); // ??
+app.use("/api/user", userRoutes);
 
 // ! lastReservation Process
 app.post("/lastReservations", (req, res) => {
