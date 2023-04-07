@@ -1,15 +1,14 @@
-const { user } = require("../model/mongodb_handler");
+const { otopark_Api } = require("../model/mongodb_handler");
 const mongoose = require("mongoose");
 
-const createUser = async (req, res) => {
-  const { name, surname, plate, email, password } = req.body;
+const createOtopark = async (req, res) => {
+  const { name, place, hourly_pay, block } = req.body;
   try {
-    const users = await user.create({
+    const createPark = await otopark_Api.create({
       name,
-      surname,
-      plate,
-      email,
-      password,
+      place,
+      hourly_pay,
+      block,
     });
     res.status(200).json(users);
   } catch (err) {
@@ -18,5 +17,5 @@ const createUser = async (req, res) => {
 };
 
 module.exports = {
-  createUser,
+  createOtopark,
 };
