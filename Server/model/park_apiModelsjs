@@ -17,5 +17,4 @@ const otopark_Api = new Schema(
   },
   { timestamps: true }
 );
-
 module.exports = mongoose.model("otopark_Api", otopark_Api);
