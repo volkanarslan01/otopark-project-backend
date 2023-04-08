@@ -11,6 +11,5 @@ router.post("/park", async (req, res) => {
     block: block,
   });
   newPark.save();
-  res.json({ msg: "New Park" });
 });
 module.exports = router;

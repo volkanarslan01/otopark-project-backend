@@ -1,9 +1,12 @@
 const express = require("express");
+const app = express();
 const userDB = require("../model/userModel.js");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
+const bodyParser = require("body-parser");
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 router.post("/register", async (req, res) => {
   const { name, surname, plate, email, password } = req.body;
   const emailValid = await userDB.findOne({ email });
@@ -22,10 +25,10 @@ router.post("/register", async (req, res) => {
   newUser.save();
   res.json({ msg: "User saved successfully" });
 });
-
+let emailValid;
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  const emailValid = await userDB.findOne({ email });
+  emailValid = await userDB.findOne({ email });
   if (!emailValid) {
     return res.json({ msg: "User not found" });
   }
@@ -37,7 +40,10 @@ router.post("/login", async (req, res) => {
 
   const token = jwt.sign({ id: emailValid._id }, "secret");
   res.json({ token: token, user_ID: emailValid._id });
-  console.log(token);
 });
 
 module.exports = router;
+router.get("/users", async (req, res) => {
+  const user = await userDB.findById(emailValid);
+  res.send(user);
+});
