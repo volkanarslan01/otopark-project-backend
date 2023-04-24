@@ -28,11 +28,10 @@ router.post("/register", async (req, res) => {
 let emailValid;
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  emailValid = await userDB.findOne({ email });
+  let emailValid = await userDB.findOne({ email });
   if (!emailValid) {
     return res.json({ msg: "User not found" });
   }
-
   const isValid = await bcrypt.compare(password, emailValid.password);
   if (!isValid) {
     return res.json({ message: "Username or password is incorrect" });
@@ -43,7 +42,16 @@ router.post("/login", async (req, res) => {
 });
 
 module.exports = router;
+console.log(emailValid);
 router.get("/users", async (req, res) => {
   const user = await userDB.findById(emailValid);
   res.send(user);
 });
+
+// router.put("/update", async (req, res) => {
+//   const { name } = req.body;
+//   const email = await userDB.findById("642fde6a5015b05ace09f3c5");
+//   console.log(email);
+//   userDB.updateOne({ email: email.email }, { $set: { name: name } });
+//   res.send({ msg: "Updated Succesful" });
+// });

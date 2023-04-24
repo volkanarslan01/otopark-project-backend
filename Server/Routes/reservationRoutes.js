@@ -22,7 +22,7 @@ router.post("/reservation", async (req, res) => {
     time_: time_,
     name: name,
     surname: surname,
-    pay: pay,
+    pay: pay,     
     state: state,
     email: email,
   });
