@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
 let emailValid;
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  let emailValid = await userDB.findOne({ email });
+  emailValid = await userDB.findOne({ email });
   if (!emailValid) {
     return res.json({ msg: "User not found" });
   }
@@ -39,14 +39,24 @@ router.post("/login", async (req, res) => {
 
   const token = jwt.sign({ id: emailValid._id }, "secret");
   res.json({ token: token, user_ID: emailValid._id });
+
+  router.get("/users", async (req, res) => {
+    const user = await userDB.findById(emailValid._id);
+    res.send(user);
+  });
 });
 
-module.exports = router;
-console.log(emailValid);
-router.get("/users", async (req, res) => {
-  const user = await userDB.findById(emailValid);
-  res.send(user);
+router.post("/validate", async (req, res) => {
+  const { email, password } = req.body;
+  console.log(email, password);
+  emailValid = await userDB.findOne({ email });
+  const isValid = await bcrypt.compare(password, emailValid.password);
+  if (!isValid) {
+    return res.send({ msg: "Does not match your old password" });
+  }
+  return res.send(emailValid._id);
 });
+module.exports = router;
 
 // router.put("/update", async (req, res) => {
 //   const { name } = req.body;
