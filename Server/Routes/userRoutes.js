@@ -34,7 +34,7 @@ router.post("/login", async (req, res) => {
   }
   const isValid = await bcrypt.compare(password, emailValid.password);
   if (!isValid) {
-    return res.json({ message: "Username or password is incorrect" });
+    return res.send({ msg: "Password is incorrect" });
   }
 
   const token = jwt.sign({ id: emailValid._id }, "secret");
@@ -56,12 +56,30 @@ router.post("/validate", async (req, res) => {
   }
   return res.send(emailValid._id);
 });
+router.put("/update", async (req, res) => {
+  const { name, surname, plate, email, password, _id } = req.body;
+  console.log(name, surname, plate, email, password);
+  const emailValid = await userDB.findOne({ _id });
+  const find = await userDB.find({ __v: 0 });
+  const hashedPassword = await bcrypt.hash(password, 15);
+  const users = await userDB.findById(_id);
+  find.forEach(async (user) => {
+    if (user.email === email) {
+      return;
+    } else if (emailValid.email == email || user.email != email) {
+      return userDB.updateOne(
+        { email: users.email },
+        {
+          $set: {
+            name: name,
+            surname: surname,
+            plate: plate,
+            email: email,
+            password: hashedPassword,
+          },
+        }
+      );
+    }
+  });
+});
 module.exports = router;
-
-// router.put("/update", async (req, res) => {
-//   const { name } = req.body;
-//   const email = await userDB.findById("642fde6a5015b05ace09f3c5");
-//   console.log(email);
-//   userDB.updateOne({ email: email.email }, { $set: { name: name } });
-//   res.send({ msg: "Updated Succesful" });
-// });
