@@ -29,7 +29,8 @@ let emailValid;
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   emailValid = await userDB.findOne({ email });
-  if (!emailValid) {
+
+  if (emailValid == null) {
     return res.json({ msg: "User not found" });
   }
   const isValid = await bcrypt.compare(password, emailValid.password);
@@ -50,23 +51,25 @@ router.post("/validate", async (req, res) => {
   const { email, password } = req.body;
   console.log(email, password);
   emailValid = await userDB.findOne({ email });
-  const isValid = await bcrypt.compare(password, emailValid.password);
-  if (!isValid) {
-    return res.send({ msg: "Does not match your old password" });
+  const find = await userDB.find({ __v: 0 });
+  if (password != "") {
+    const isValid = await bcrypt.compare(password, emailValid.password);
+    if (!isValid) {
+      return res.send({ msg: "Does not match your old password" });
+    }
   }
   return res.send(emailValid._id);
 });
 router.put("/update", async (req, res) => {
   const { name, surname, plate, email, password, _id } = req.body;
+  console.log(_id);
   console.log(name, surname, plate, email, password);
   const emailValid = await userDB.findOne({ _id });
   const find = await userDB.find({ __v: 0 });
   const hashedPassword = await bcrypt.hash(password, 15);
   const users = await userDB.findById(_id);
   find.forEach(async (user) => {
-    if (user.email === email) {
-      return;
-    } else if (emailValid.email == email || user.email != email) {
+    if (emailValid.email == email || user.email != email) {
       return userDB.updateOne(
         { email: users.email },
         {
@@ -79,6 +82,8 @@ router.put("/update", async (req, res) => {
           },
         }
       );
+    } else if (user.email == email) {
+      return res.send({ msg: "User already exists" });
     }
   });
 });
