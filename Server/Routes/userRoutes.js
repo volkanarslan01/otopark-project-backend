@@ -92,6 +92,7 @@ router.put("/update", async (req, res) => {
     if (!isValid) {
       return res.send({ msg: "Does not match your old password" });
     } else if (email == users.email) {
+      res.send({ msg: "Update Succesful" });
       return userDB.updateOne(
         { email: users.email },
         {
@@ -105,11 +106,11 @@ router.put("/update", async (req, res) => {
         }
       );
     } else if (email) {
+      res.send({ msg: "Update Succesful" });
       find.map((user) => {
         if (user.email == email) {
           return res.send({ msg: "This email belongs to any user" });
         } else {
-          console.log(name, surname, email);
           return userDB.updateOne(
             { email: users.email },
             {
@@ -126,11 +127,5 @@ router.put("/update", async (req, res) => {
       });
     }
   }
-
-  // find.forEach(async (user) => {
-  //   if (emailValid.email == email || user.email != email) {
-  //     return
-  //   }
-  // });
 });
 module.exports = router;

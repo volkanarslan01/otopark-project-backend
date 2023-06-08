@@ -10,7 +10,7 @@ const otopark_Api = new Schema(
     },
     place: { type: String, required: true },
     hourly_pay: { type: Number, required: true },
-    block: [],
+    Block: [],
     kat: [],
   },
   { timestamps: true }

@@ -6,6 +6,8 @@ const reservations = new Schema(
   {
     park_name: { type: String, required: true },
     park_place: { type: String, required: true },
+    block: { type: String, required: true },
+    no: { type: Number, required: true },
     time: { type: Number, required: true },
     time_: { type: Number, required: true },
     name: { type: String, required: true },
