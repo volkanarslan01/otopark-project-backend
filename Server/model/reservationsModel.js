@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const reservations = new Schema(
+const reservationsModels = new Schema(
   {
     park_name: { type: String, required: true },
     park_place: { type: String, required: true },
@@ -12,11 +12,12 @@ const reservations = new Schema(
     time_: { type: Number, required: true },
     name: { type: String, required: true },
     surname: { type: String, required: true },
-    pay: { type: String, required: true },
+    pay: { type: Number, required: true },
     state: { type: Boolean, required: true },
     email: { type: String, required: true },
+    createdAt: { type: Date, required: true },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("reservations", reservations);
+module.exports = mongoose.model("reservations", reservationsModels);

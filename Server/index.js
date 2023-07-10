@@ -1,6 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const bodyParser = require("body-parser");
+const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
@@ -20,7 +21,10 @@ app.use("/api", parkRoute);
 app.use("/api", userRoute);
 app.use("/api", feedbackRoutes);
 app.use("/api", reservationsRoute);
+// app.use("/api", reservationsRoute);
 // * Connect to MongoDB
+
+const obj = { name: "user" };
 mongoose
   .connect(process.env.MONGO_DB)
   .then(() => {
