@@ -19,12 +19,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api", parkRoute);
 app.use("/api", userRoute);
-app.use("/api", feedbackRoutes);
+app.use("/api", feedbackRoutes);  
 app.use("/api", reservationsRoute);
-// app.use("/api", reservationsRoute);
 // * Connect to MongoDB
-
-const obj = { name: "user" };
 mongoose
   .connect(process.env.MONGO_DB)
   .then(() => {

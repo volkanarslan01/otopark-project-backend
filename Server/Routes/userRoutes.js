@@ -47,37 +47,6 @@ router.post("/login", async (req, res) => {
   });
 });
 
-// ? email current check
-// router.post("/validate", async (req, res) => {
-//   const { email, password } = req.body;
-//   console.log(email, password);
-//   emailValid = await userDB.findOne({ email });
-//   if (password != "") {
-//     const isValid = await bcrypt.compare(password, emailValid.password);
-//     if (!isValid) {
-//       return res.send({ msg: "Does not match your old password" });
-//     }
-//   }
-//   return res.send(emailValid._id);
-// });
-
-// ! email current check
-// router.post("/valid", async (req, res) => {
-//   const { email } = req.body;
-//   console.log(email);
-//   emailValid = await userDB.findOne({ email });
-//   console.log(emailValid);
-//   const find = await userDB.find({ __v: 0 });
-//   if (emailValid) {
-//     find.forEach((user) => {
-//       if (emailValid.email == email || user.email != email) {
-//         return res.send({ msg: "This email doesn’t belong to anyone" });
-//       } else {
-//         return res.send({ msg: "User already exists" });
-//       }
-//     });
-//   }
-// });
 router.put("/update", async (req, res) => {
   const { name, surname, plate, email, password, _id, oldpassword } = req.body;
   console.log(oldpassword, name, surname, plate, email, password, _id);
